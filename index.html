@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할로윈 파티 초대장</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #1a1528;
+            font-family: 'Noto Serif KR', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 배경 효과 */
+        .bg-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(107, 44, 145, 0.25) 0%, rgba(26, 21, 40, 0.95) 80%);
+            z-index: 0;
+        }
+
+        /* 메인 컨테이너 (컴퓨터 화면 대응 확장) */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 편지 봉투 크기 확장 */
+        .envelope-wrapper {
+            position: relative;
+            width: 520px;
+            height: 340px;
+            cursor: pointer;
+            transition: transform 0.4s ease, opacity 0.3s ease;
+            filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.6));
+        }
+
+        .envelope-wrapper:hover {
+            transform: translateY(-8px);
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #3b2054;
+            border-radius: 0 0 16px 16px;
+        }
+
+        /* 봉투 덮개(Flap) 크기 조절 */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 260px solid transparent;
+            border-right: 260px solid transparent;
+            border-top: 185px solid #482769;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+            z-index: 30;
+        }
+
+        /* 봉투 포켓 */
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3b2054 0%, #29153d 100%);
+            border-radius: 0 0 16px 16px;
+            clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+            z-index: 20;
+        }
+
+        /* 왁스 씰 크기 확장 */
+        .wax-seal {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #e67e22 0%, #b33939 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            border: 3px solid #f39c12;
+            z-index: 35;
+            font-size: 32px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 안내 문구 */
+        .guide-text {
+            position: absolute;
+            bottom: -50px;
+            width: 100%;
+            text-align: center;
+            color: #d8b4fe;
+            font-size: 18px;
+            font-family: 'Jua', sans-serif;
+            letter-spacing: 1.2px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* 편지지 (컴퓨터 화면용 대형 크기 지정) */
+        .letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.3);
+            width: 90%;
+            max-width: 620px;
+            background: #fffdf9;
+            border-radius: 20px;
+            padding: 55px 45px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 50;
+            border: 5px solid #ffb142;
+        }
+
+        /* 테두리 실선 장식 */
+        .letter::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px dashed #e58e26;
+            border-radius: 14px;
+            pointer-events: none;
+        }
+
+        /* 편지가 열렸을 때 애니메이션 */
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 5;
+        }
+
+        .envelope-wrapper.open .wax-seal {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .envelope-wrapper.open + .letter {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .envelope-wrapper.open {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease 0.3s;
+        }
+
+        /* 편지 내부 텍스트 및 가독성 개선 */
+        .letter-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .letter-header h1 {
+            font-family: 'Jua', sans-serif;
+            color: #d35400;
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .letter-header p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .letter-body {
+            font-size: 17px;
+            color: #2c3e50;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .info-box {
+            background: #fff3e0;
+            border-left: 5px solid #e67e22;
+            padding: 18px 22px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 30px;
+            font-size: 16px;
+            color: #d35400;
+        }
+
+        .info-box p {
+            margin-bottom: 8px;
+        }
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 다시 봉투에 넣기 (옅은 회색 글씨) */
+        .close-btn-text {
+            text-align: center;
+            color: #b2bec3;
+            font-size: 15px;
+            cursor: pointer;
+            transition: color 0.2s;
+            font-family: 'Noto Serif KR', serif;
+            margin-top: 10px;
+        }
+
+        .close-btn-text:hover {
+            color: #636e72;
+            text-decoration: underline;
+        }
+
+        /* 모바일 화면 대응 자동 축소 */
+        @media (max-width: 600px) {
+            .envelope-wrapper {
+                width: 340px;
+                height: 220px;
+            }
+            .envelope-flap {
+                border-left-width: 170px;
+                border-right-width: 170px;
+                border-top-width: 120px;
+            }
+            .wax-seal {
+                top: 95px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            .letter {
+                padding: 35px 25px;
+            }
+            .letter-header h1 {
+                font-size: 26px;
+            }
+            .letter-body {
+                font-size: 14px;
+            }
+            .info-box {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <!-- 편지 봉투 -->
+        <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+            <div class="envelope"></div>
+            <div class="envelope-flap"></div>
+            <div class="wax-seal">🎃</div>
+            <div class="envelope-pocket"></div>
+            <div class="guide-text">✨ 편지를 열려면 클릭하세요 ✨</div>
+        </div>
+
+        <!-- 편지지 -->
+        <div class="letter" id="letterCard">
+            <div class="letter-header">
+                <h1>🎃 HALLOWEEN EVENT 🎃</h1>
+                <p>유령의 도움을 요청하는 편지가 도착했어요</p>
+            </div>
+            
+            <div class="letter-body">
+                <p>할로윈에 맞춰 이승에 내려오기 위해 여행하고 있던 유령은 요상하고 아름다운 노래에 이끌려 너무 일찍 이승에 도착해버렸어요. 여러분의 도움이 필요해요! </p>
+            </div>
+
+            <div class="info-box">
+                <p>   <strong>일시:</strong> 2026년 10월 28일 (수) 저녁 7시 30분 ~ 8시</p>
+                <p>   <strong>장소:</strong> 나원스튜디오</p>
+                <p>   <strong>조건:</strong> 숨어있는 유령을 찾아주세요</p>
+            </div>
+
+            <div class="close-btn-text" onclick="closeEnvelope(event)">
+                다시 봉투에 넣기
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEnvelope() {
+            const wrapper = document.getElementById('envelopeWrapper');
+            wrapper.classList.add('open');
+        }
+
+        function closeEnvelope(event) {
+            event.stopPropagation();
+            const wrapper = document.getElementById('envelopeWrapper');
+            wrapper.classList.remove('open');
+        }
+    </script>
+</body>
+</html>
