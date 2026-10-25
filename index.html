@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>의문의 편지</title> <!-- 브라우저 탭에 표시되는 이름 -->
-
-    <!-- 메신저(카카오톡 등) 공유 시 표시될 정보 설정 -->
+    <title>의문의 편지</title>
     <meta property="og:title" content="의문의 편지">
     <meta property="og:description" content="오싹하고 신비로운 편지가 도착했습니다. 열어보세요!">
-    <!-- 썸네일로 보여줄 이미지가 있다면 아래 링크에 넣으셔도 됩니다 (생략 가능) -->
-    <!-- <meta property="og:image" content="이미지주소.jpg"> -->
-
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
         * {
             box-sizing: border-box;
@@ -40,7 +34,7 @@
             z-index: 0;
         }
 
-        /* 메인 컨테이너 (컴퓨터 화면 대응 확장) */
+        /* 메인 컨테이너 */
         .container {
             position: relative;
             z-index: 10;
@@ -141,7 +135,7 @@
             50% { transform: translateY(-8px); }
         }
 
-        /* 편지지 (컴퓨터 화면용 대형 크기 지정) */
+        /* 편지지 */
         .letter {
             position: absolute;
             top: 50%;
@@ -158,6 +152,7 @@
             transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 50;
             border: 5px solid #ffb142;
+            overflow: hidden;
         }
 
         /* 테두리 실선 장식 */
@@ -168,6 +163,7 @@
             border: 2px dashed #e58e26;
             border-radius: 14px;
             pointer-events: none;
+            z-index: 3;
         }
 
         /* 편지가 열렸을 때 애니메이션 */
@@ -193,7 +189,11 @@
             transition: opacity 0.3s ease 0.3s;
         }
 
-        /* 편지 내부 텍스트 및 가독성 개선 */
+        .letter-content-inner {
+            position: relative;
+            z-index: 2;
+        }
+
         .letter-header {
             text-align: center;
             margin-bottom: 28px;
@@ -236,7 +236,6 @@
             margin-bottom: 0;
         }
 
-        /* 다시 봉투에 넣기 (옅은 회색 글씨) */
         .close-btn-text {
             text-align: center;
             color: #b2bec3;
@@ -252,7 +251,6 @@
             text-decoration: underline;
         }
 
-        /* 모바일 화면 대응 자동 축소 */
         @media (max-width: 600px) {
             .envelope-wrapper {
                 width: 340px;
@@ -296,34 +294,49 @@
             <div class="envelope-flap"></div>
             <div class="wax-seal">🎃</div>
             <div class="envelope-pocket"></div>
-            <div class="guide-text">✨ 편지를 열려면 클릭하세요 ✨</div>
+            <div class="guide-text" id="guideText">✨ 편지를 열려면 클릭하세요 ✨</div>
         </div>
 
         <!-- 편지지 -->
         <div class="letter" id="letterCard">
-            <div class="letter-header">
-                <h1>🎃 HALLOWEEN EVENT 🎃</h1>
-                <p>유령의 도움을 요청하는 편지가 도착했어요</p>
-            </div>
-            
-            <div class="letter-body">
-                <p>할로윈에 맞춰 이승에 내려오기 위해 여행하고 있던 유령은 요상하고 아름다운 노래에 이끌려 너무 일찍 이승에 도착해버렸어요. 여러분의 도움이 필요해요! </p>
-            </div>
 
-            <div class="info-box">
-                <p>   <strong>일시:</strong> 2026년 10월 28일 (수) 저녁 7시 30분 ~ 8시</p>
-                <p>   <strong>장소:</strong> 나원스튜디오</p>
-                <p>   <strong>보상:</strong> 소정의 간식</p>
-            </div>
+            <div class="letter-content-inner">
+                <div class="letter-header">
+                    <h1>🎃 HALLOWEEN EVENT 🎃</h1>
+                    <p>신비로운 유령의 초대장이 도착했어요</p>
+                </div>
+                
+                <div class="letter-body">
+                    <p>할로윈에 맞춰 여행하고있던 유령이 아름다운 음악과 뜨거운 열정의 여러분께 챙겨온 작은 간식을 나눠주려고해요. </p>
+                    <p>간식받아가세요! Trick or treat!</p>
+                </div>
 
-            <div class="close-btn-text" onclick="closeEnvelope(event)">
-                다시 봉투에 넣기
+                <div class="info-box">
+                    <p><strong>일시:</strong> 2026년 10월 28일 (수) 저녁 7시 30분 ~ 8시</p>
+                    <p><strong>장소:</strong> 나원스튜디오</p>
+                    <p><strong>보상:</strong> 소정의 간식</p>
+                </div>
+
+                <div class="close-btn-text" onclick="closeEnvelope(event)">
+                    다시 봉투에 넣기
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         function openEnvelope() {
+            // 2026년 10월 28일 오후 6시 (18시 00분 00초) 설정
+            const openTime = new Date('2026-10-28T18:00:00').getTime();
+            const currentTime = new Date().getTime();
+
+            // 설정된 시간보다 현재 시간이 이를 경우 알림창 띄우기
+            if (currentTime < openTime) {
+                alert('아직 편지가 열릴 시간이 아닙니다!\n(공개 시간: 10월 28일 오후 6시)');
+                return;
+            }
+
+            // 시간이 지나면 정상적으로 편지 열림
             const wrapper = document.getElementById('envelopeWrapper');
             wrapper.classList.add('open');
         }
