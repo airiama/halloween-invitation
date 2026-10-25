@@ -326,17 +326,7 @@
 
     <script>
         function openEnvelope() {
-            // 2026년 10월 28일 오후 6시 (18시 00분 00초) 설정
-            const openTime = new Date('2026-10-28T18:00:00').getTime();
-            const currentTime = new Date().getTime();
-
-            // 설정된 시간보다 현재 시간이 이를 경우 알림창 띄우기
-            if (currentTime < openTime) {
-                alert('아직 편지가 열릴 시간이 아닙니다!\n(공개 시간: 10월 28일 오후 6시)');
-                return;
-            }
-
-            // 시간이 지나면 정상적으로 편지 열림
+            // 시간 제한 없이 클릭하면 바로 편지가 열립니다.
             const wrapper = document.getElementById('envelopeWrapper');
             wrapper.classList.add('open');
         }
